@@ -7,15 +7,19 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
-data class UserDetails(
+data class UserDetailsImpl(
     @Id
     private val username: String,
     @Column(nullable = false)
-    private val password: String,
+    private var password: String,
 ) : UserDetails {
     override fun getAuthorities() = emptyList<GrantedAuthority>()
 
     override fun getPassword() = password
+
+    fun setPassword(newPassword: String) {
+        password = newPassword
+    }
 
     override fun getUsername() = username
 

@@ -6,52 +6,52 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class UserDetailsTest {
+class UserDetailsImplTest {
 
     companion object {
         private const val USERNAME = "aUsername"
         private const val PASSWORD = "aPassword"
     }
 
-    private lateinit var userDetails: UserDetails
+    private lateinit var userDetailsImpl: UserDetailsImpl
 
     @BeforeEach
     fun setUp() {
-        userDetails = UserDetails(USERNAME, PASSWORD)
+        userDetailsImpl = UserDetailsImpl(USERNAME, PASSWORD)
     }
 
     @Test
     fun givenUserWhenGetUsernameThenReturnUsername() {
-        assertThat(userDetails.username, equalTo(USERNAME))
+        assertThat(userDetailsImpl.username, equalTo(USERNAME))
     }
 
     @Test
     fun givenUserWhenGetPasswordThenReturnPassword() {
-        assertThat(userDetails.password, equalTo(PASSWORD))
+        assertThat(userDetailsImpl.password, equalTo(PASSWORD))
     }
 
     @Test
     fun givenUserWhenGetAuthoritiesThenReturnEmpty() {
-        assertThat(userDetails.authorities, empty())
+        assertThat(userDetailsImpl.authorities, empty())
     }
 
     @Test
     fun givenUserWhenIsAccountNonExpiredThenReturnTrue() {
-        assertThat(userDetails.isAccountNonExpired, equalTo(true))
+        assertThat(userDetailsImpl.isAccountNonExpired, equalTo(true))
     }
 
     @Test
     fun givenUserWhenIsAccountNonLockedThenReturnTrue() {
-        assertThat(userDetails.isAccountNonLocked, equalTo(true))
+        assertThat(userDetailsImpl.isAccountNonLocked, equalTo(true))
     }
 
     @Test
     fun givenUserWhenIsCredentialsNonExpiredThenReturnTrue() {
-        assertThat(userDetails.isCredentialsNonExpired, equalTo(true))
+        assertThat(userDetailsImpl.isCredentialsNonExpired, equalTo(true))
     }
 
     @Test
     fun givenUserWhenIsEnabledThenReturnTrue() {
-        assertThat(userDetails.isEnabled, equalTo(true))
+        assertThat(userDetailsImpl.isEnabled, equalTo(true))
     }
 }
