@@ -16,6 +16,7 @@ class SecurityConfig : VaadinWebSecurity() {
     override fun configure(http: HttpSecurity) {
         super.configure(http)
         setLoginView(http, LoginRoute::class.java)
+        http.formLogin().defaultSuccessUrl("/dashboard", true)
     }
 
     @Bean

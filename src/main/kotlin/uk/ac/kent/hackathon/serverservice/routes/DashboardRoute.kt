@@ -1,15 +1,15 @@
 package uk.ac.kent.hackathon.serverservice.routes
 
+import com.vaadin.flow.component.html.H1
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
-import com.vaadin.flow.spring.security.AuthenticationContext
 import jakarta.annotation.security.PermitAll
-import org.springframework.security.core.userdetails.UserDetails
+import uk.ac.kent.hackathon.serverservice.layouts.MainLayout
 
-@Route("dashboard")
+@Route("dashboard", layout = MainLayout::class)
 @PermitAll
-class DashboardRoute(authenticationContext: AuthenticationContext) : VerticalLayout() {
+class DashboardRoute : VerticalLayout() {
     init {
-        add(authenticationContext.getAuthenticatedUser(UserDetails::class.java).get().username)
+        add(H1("Dashboard"))
     }
 }

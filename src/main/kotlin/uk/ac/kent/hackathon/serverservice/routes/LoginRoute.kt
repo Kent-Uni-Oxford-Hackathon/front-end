@@ -7,8 +7,9 @@ import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import uk.ac.kent.hackathon.serverservice.layouts.MainLayout
 
-@Route("login")
+@Route("login", layout = MainLayout::class)
 @AnonymousAllowed
 class LoginRoute : VerticalLayout(), BeforeEnterObserver {
 

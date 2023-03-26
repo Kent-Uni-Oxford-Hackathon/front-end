@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.context.TestSecurityContextHolder
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
-import uk.ac.kent.hackathon.serverservice.exception.UserAlreadyExistsException
+import uk.ac.kent.hackathon.serverservice.exception.UsernameAlreadyExistsException
 import uk.ac.kent.hackathon.serverservice.repository.UserDetailsRepository
 import java.util.Optional.empty
 import java.util.Optional.of
@@ -77,7 +77,7 @@ class UserDetailsServiceTest {
 
         try {
             userDetailsService.createUser(USER_DETAILS)
-        } catch (e: UserAlreadyExistsException) {
+        } catch (e: UsernameAlreadyExistsException) {
             assertThat(e.message, equalTo("User with username '${USERNAME}' already exists!"))
         }
 
