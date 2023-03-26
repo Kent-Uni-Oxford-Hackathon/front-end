@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Service
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
-import uk.ac.kent.hackathon.serverservice.exception.UserAlreadyExistsException
+import uk.ac.kent.hackathon.serverservice.exception.UsernameAlreadyExistsException
 import uk.ac.kent.hackathon.serverservice.repository.UserDetailsRepository
 
 @Service
@@ -22,7 +22,7 @@ class UserDetailsService(
             .orElseThrow { UsernameNotFoundException("Username '${username}' not found!") }!!
 
     override fun createUser(user: UserDetails) {
-        if (userExists(user.username)) throw UserAlreadyExistsException("User with username '${user.username}' already exists!")
+        if (userExists(user.username)) throw UsernameAlreadyExistsException("User with username '${user.username}' already exists!")
         userDetailsRepository.save(user as UserDetailsImpl)
     }
 
