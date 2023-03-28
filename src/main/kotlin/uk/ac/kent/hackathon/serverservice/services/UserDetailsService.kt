@@ -1,5 +1,6 @@
 package uk.ac.kent.hackathon.serverservice.services
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -37,11 +38,12 @@ class UserDetailsService(
     }
 
     override fun changePassword(oldPassword: String, newPassword: String) {
-        val username = SecurityContextHolder.getContext().authentication.name
-        val user = userDetailsRepository.findById(username)
-            .orElseThrow { UsernameNotFoundException("User with username '${username}' not found!") }
-        user.password = passwordEncoder.encode(newPassword)
-        userDetailsRepository.save(user)
+        with(SecurityContextHolder.getContext().authentication.name) {
+            userDetailsRepository.findByIdOrNull(this)
+                ?.apply { password = passwordEncoder.encode(newPassword) }
+                ?.also(userDetailsRepository::save)
+                ?: throw UsernameNotFoundException("User with username '${this}' not found!")
+        }
     }
 
     override fun userExists(username: String) = userDetailsRepository.existsById(username)
