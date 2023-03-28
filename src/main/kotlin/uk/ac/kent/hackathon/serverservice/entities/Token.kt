@@ -10,7 +10,7 @@ data class Token(
     @Column(nullable = false)
     val tokenString: String,
     @OneToOne
-    val owner: UserDetailsImpl,
+    var owner: UserDetailsImpl,
     @Column(nullable = false)
     @ElementCollection
     val categories: Collection<String>,
