@@ -62,12 +62,14 @@ class UserDetailsServiceTest {
 
     @Test
     fun givenNoUserAlreadyExistsThenCreateUserThenSave() {
+        val encodedNewPassword = "encryptedNewPassword"
+        given(passwordEncoder.encode(PASSWORD)).willReturn(encodedNewPassword)
         given(userRepository.existsById(USERNAME)).willReturn(false)
 
         userDetailsService.createUser(USER_DETAILS)
 
         then(userRepository).should(times(1)).existsById(USERNAME)
-        then(userRepository).should(times(1)).save(USER_DETAILS)
+        then(userRepository).should(times(1)).save(UserDetailsImpl(USERNAME, encodedNewPassword))
         then(userRepository).shouldHaveNoMoreInteractions()
     }
 

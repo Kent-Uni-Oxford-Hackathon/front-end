@@ -24,7 +24,9 @@ class UserDetailsService(
 
     override fun createUser(user: UserDetails) {
         if (userExists(user.username)) throw UsernameAlreadyExistsException("User with username '${user.username}' already exists!")
-        userDetailsRepository.save(user as UserDetailsImpl)
+        (user as UserDetailsImpl)
+            .apply { user.password = passwordEncoder.encode(user.password) }
+            .also(userDetailsRepository::save)
     }
 
     override fun updateUser(user: UserDetails) {
