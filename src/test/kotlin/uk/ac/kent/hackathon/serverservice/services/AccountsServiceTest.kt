@@ -85,7 +85,6 @@ class AccountsServiceTest {
 
         accountsService.createUser(userDetails)
 
-        then(etherAccountRepository).should(times(1)).save(etherAccount)
         then(userRepository).should(times(1)).existsById(USERNAME)
         then(userRepository).should(times(1)).save(UserDetailsImpl(USERNAME, encodedNewPassword, etherAccount))
         then(userRepository).shouldHaveNoMoreInteractions()
@@ -93,13 +92,13 @@ class AccountsServiceTest {
     }
 
     @Test
-    fun givenUserAlreadyExistsWhenCreateUserThenSave() {
+    fun givenUserAlreadyExistsWhenCreateUserThenThrow() {
         given(userRepository.existsById(USERNAME)).willReturn(true)
 
         try {
             accountsService.createUser(userDetails)
         } catch (e: UsernameAlreadyExistsException) {
-            assertThat(e.message, equalTo("User with username '${USERNAME}' already exists!"))
+            assertThat(e.message, equalTo("User with username '$USERNAME' already exists!"))
         }
 
         then(userRepository).should(times(1)).existsById(USERNAME)

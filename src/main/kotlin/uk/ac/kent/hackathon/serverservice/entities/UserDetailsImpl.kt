@@ -13,8 +13,7 @@ data class UserDetailsImpl(
     private val username: String,
     @Column(nullable = false)
     private var password: String,
-    @OneToOne
-    private var etherAccount: EtherAccount,
+    @OneToOne var etherAccount: EtherAccount,
 ) : UserDetails {
     override fun getAuthorities() = emptyList<GrantedAuthority>()
 

@@ -26,12 +26,16 @@ class AccountsService(
             .orElseThrow { UsernameNotFoundException("Username '${username}' not found!") }!!
 
     override fun createUser(user: UserDetails) {
+        user as UserDetailsImpl
         if (userExists(user.username)) throw UsernameAlreadyExistsException("User with username '${user.username}' already exists!")
-        if (userExists(user.username)) throw UsernameAlreadyExistsException("User with username '${user.username}' already exists!")
-        (user as UserDetailsImpl)
+        user
             .apply { user.password = passwordEncoder.encode(user.password) }
             .also(userDetailsRepository::save)
-        etherAccountRepository.save(generateEtherAccount())
+    }
+
+    fun createUser(username: String, password: String) {
+        val etherAccount = etherAccountRepository.save(generateEtherAccount())
+        createUser(UserDetailsImpl(username, password, etherAccount))
     }
 
     private fun generateEtherAccount() = EtherAccount("A_ETH_PK") // TODO: Pull from API
