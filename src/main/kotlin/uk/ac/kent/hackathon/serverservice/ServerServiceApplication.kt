@@ -1,6 +1,6 @@
 package uk.ac.kent.hackathon.serverservice
 
-import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -16,15 +16,8 @@ class ServerServiceApplication(
 ) {
 
     @Bean
-    fun commandLineRunner(userDetailsRepository: UserDetailsRepository): CommandLineRunner {
-        return CommandLineRunner {
-            userDetailsRepository.save(
-                UserDetailsImpl(
-                    "admin",
-                    passwordEncoder.encode(applicationConfig.adminPassword)
-                )
-            )
-        }
+    fun createAdminUser(userDetailsRepository: UserDetailsRepository) = ApplicationRunner {
+        userDetailsRepository.save(UserDetailsImpl("admin", passwordEncoder.encode(applicationConfig.adminPassword)))
     }
 }
 
