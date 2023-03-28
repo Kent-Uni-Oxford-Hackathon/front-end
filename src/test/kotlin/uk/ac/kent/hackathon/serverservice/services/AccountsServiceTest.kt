@@ -78,7 +78,7 @@ class AccountsServiceTest {
     }
 
     @Test
-    fun givenNoUserAlreadyExistsThenCreateUserThenSave() {
+    fun givenNoUserAlreadyExistsWhenCreateUserThenSave() {
         val encodedNewPassword = "encryptedNewPassword"
         given(passwordEncoder.encode(PASSWORD)).willReturn(encodedNewPassword)
         given(userRepository.existsById(USERNAME)).willReturn(false)
@@ -87,6 +87,22 @@ class AccountsServiceTest {
 
         then(userRepository).should(times(1)).existsById(USERNAME)
         then(userRepository).should(times(1)).save(UserDetailsImpl(USERNAME, encodedNewPassword, etherAccount))
+        then(userRepository).shouldHaveNoMoreInteractions()
+        then(etherAccountRepository).shouldHaveNoMoreInteractions()
+    }
+
+    @Test
+    fun givenNoEtherAccountWhenCreateUserThenGenerateNewAccount() {
+        val encodedNewPassword = "encryptedNewPassword"
+        given(passwordEncoder.encode(PASSWORD)).willReturn(encodedNewPassword)
+        given(userRepository.existsById(USERNAME)).willReturn(false)
+        given(etherAccountRepository.save(any())).willReturn(etherAccount)
+
+        accountsService.createUser(USERNAME, PASSWORD)
+
+        then(userRepository).should(times(1)).existsById(USERNAME)
+        then(userRepository).should(times(1)).save(UserDetailsImpl(USERNAME, encodedNewPassword, etherAccount))
+        then(etherAccountRepository).should(times(1)).save(etherAccount)
         then(userRepository).shouldHaveNoMoreInteractions()
         then(etherAccountRepository).shouldHaveNoMoreInteractions()
     }
