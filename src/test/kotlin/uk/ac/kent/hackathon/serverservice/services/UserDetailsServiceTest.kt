@@ -2,6 +2,7 @@ package uk.ac.kent.hackathon.serverservice.services
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +24,13 @@ class UserDetailsServiceTest {
     companion object {
         private const val USERNAME = "aUsername"
         private const val PASSWORD = "aPassword"
-        private val USER_DETAILS = UserDetailsImpl(USERNAME, PASSWORD)
+    }
+
+    private lateinit var userDetails: UserDetailsImpl
+
+    @BeforeEach
+    fun setUp() {
+        userDetails = UserDetailsImpl(USERNAME, PASSWORD)
     }
 
     @Autowired
@@ -37,11 +44,11 @@ class UserDetailsServiceTest {
 
     @Test
     fun givenUserExistsWhenLoadUserByUsernameThenReturnUser() {
-        given(userRepository.findById(USERNAME)).willReturn(of(USER_DETAILS))
+        given(userRepository.findById(USERNAME)).willReturn(of(userDetails))
 
         val user = userDetailsService.loadUserByUsername(USERNAME)
 
-        assertThat(user, equalTo(USER_DETAILS))
+        assertThat(user, equalTo(userDetails))
         then(userRepository).should(times(1)).findById(USERNAME)
         then(userRepository).shouldHaveNoMoreInteractions()
     }
@@ -62,12 +69,14 @@ class UserDetailsServiceTest {
 
     @Test
     fun givenNoUserAlreadyExistsThenCreateUserThenSave() {
+        val encodedNewPassword = "encryptedNewPassword"
+        given(passwordEncoder.encode(PASSWORD)).willReturn(encodedNewPassword)
         given(userRepository.existsById(USERNAME)).willReturn(false)
 
-        userDetailsService.createUser(USER_DETAILS)
+        userDetailsService.createUser(userDetails)
 
         then(userRepository).should(times(1)).existsById(USERNAME)
-        then(userRepository).should(times(1)).save(USER_DETAILS)
+        then(userRepository).should(times(1)).save(UserDetailsImpl(USERNAME, encodedNewPassword))
         then(userRepository).shouldHaveNoMoreInteractions()
     }
 
@@ -76,13 +85,13 @@ class UserDetailsServiceTest {
         given(userRepository.existsById(USERNAME)).willReturn(true)
 
         try {
-            userDetailsService.createUser(USER_DETAILS)
+            userDetailsService.createUser(userDetails)
         } catch (e: UsernameAlreadyExistsException) {
             assertThat(e.message, equalTo("User with username '${USERNAME}' already exists!"))
         }
 
         then(userRepository).should(times(1)).existsById(USERNAME)
-        then(userRepository).should(never()).save(USER_DETAILS)
+        then(userRepository).should(never()).save(userDetails)
         then(userRepository).shouldHaveNoMoreInteractions()
     }
 
@@ -108,7 +117,7 @@ class UserDetailsServiceTest {
         }
 
         then(userRepository).should(times(1)).existsById(USERNAME)
-        then(userRepository).should(never()).delete(USER_DETAILS)
+        then(userRepository).should(never()).delete(userDetails)
         then(userRepository).shouldHaveNoMoreInteractions()
     }
 
@@ -116,7 +125,7 @@ class UserDetailsServiceTest {
     fun givenUserWhenChangePasswordThenSave() {
         val newPassword = "newPassword"
         val encodedNewPassword = "encryptedNewPassword"
-        given(userRepository.findById(USERNAME)).willReturn(of(USER_DETAILS))
+        given(userRepository.findById(USERNAME)).willReturn(of(userDetails))
         given(passwordEncoder.encode(newPassword)).willReturn(encodedNewPassword)
         TestSecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(USERNAME, PASSWORD)
 
