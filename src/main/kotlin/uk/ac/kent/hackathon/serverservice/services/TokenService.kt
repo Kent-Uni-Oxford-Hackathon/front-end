@@ -10,7 +10,7 @@ import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 
 @Service
-class TokenService(private val etherscanConfig: EtherscanConfig) {
+class TokenService(private val etherscanConfig: EtherscanConfig, private val restTemplate: RestTemplate) {
 
     fun getTokensByUser(userDetailsImpl: UserDetailsImpl): Collection<Token> {
         val uri = UriComponentsBuilder.fromHttpUrl("https://api-sepolia.etherscan.io/api")
@@ -27,7 +27,7 @@ class TokenService(private val etherscanConfig: EtherscanConfig) {
             .build().toUri()
 
         val newList = mutableListOf<Token>()
-        RestTemplate().getForObject<TokenNFTTxResponse>(uri).result.forEach {
+        restTemplate.getForObject<TokenNFTTxResponse>(uri).result.forEach {
             val token = Token(it.tokenId, userDetailsImpl, "") // TODO: Fix description lol
             if (it.to == userDetailsImpl.etherAccount.ethPkHash) {
                 newList.add(token)
