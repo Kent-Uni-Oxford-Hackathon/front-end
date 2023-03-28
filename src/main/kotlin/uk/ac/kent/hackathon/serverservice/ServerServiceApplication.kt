@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import uk.ac.kent.hackathon.serverservice.config.ApplicationConfig
 import uk.ac.kent.hackathon.serverservice.entities.EtherAccount
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
+import uk.ac.kent.hackathon.serverservice.repository.EtherAccountRepository
 import uk.ac.kent.hackathon.serverservice.repository.UserDetailsRepository
 
 @SpringBootApplication
@@ -17,8 +18,11 @@ class ServerServiceApplication(
 ) {
 
     @Bean
-    fun createAdminUser(userDetailsRepository: UserDetailsRepository) = ApplicationRunner {
-        userDetailsRepository.save(UserDetailsImpl("admin", passwordEncoder.encode(applicationConfig.adminPassword), EtherAccount("")))
+    fun createAdminUser(userDetailsRepository: UserDetailsRepository, etherAccountRepository: EtherAccountRepository) = ApplicationRunner {
+        val etherAccount = EtherAccount("A_PK_HASH")
+        etherAccountRepository.save(etherAccount)
+        val password = passwordEncoder.encode(applicationConfig.adminPassword)
+        userDetailsRepository.save(UserDetailsImpl("admin", password, etherAccount))
     }
 }
 
