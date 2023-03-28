@@ -40,7 +40,7 @@ class SignupRoute(userDetailsService: UserDetailsService) : VerticalLayout() {
                 setWidthFull()
             }
         val errorMessageField = Span()
-        val submitButton = Button("Join the community") {
+        val submitButton = Button("Sign up") {
             val user = UserDetailsImpl(username.value, password.value)
             userDetailsService.createUser(user)
             showSuccess(user)
