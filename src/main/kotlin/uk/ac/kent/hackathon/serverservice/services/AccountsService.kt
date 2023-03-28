@@ -7,12 +7,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Service
+import uk.ac.kent.hackathon.serverservice.entities.EtherAccount
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 import uk.ac.kent.hackathon.serverservice.exception.UsernameAlreadyExistsException
+import uk.ac.kent.hackathon.serverservice.repository.EtherAccountRepository
 import uk.ac.kent.hackathon.serverservice.repository.UserDetailsRepository
 
 @Service
-class UserDetailsService(
+class AccountsService(
+    private val etherAccountRepository: EtherAccountRepository,
     private val userDetailsRepository: UserDetailsRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserDetailsManager {
@@ -23,11 +26,19 @@ class UserDetailsService(
             .orElseThrow { UsernameNotFoundException("Username '${username}' not found!") }!!
 
     override fun createUser(user: UserDetails) {
+        user as UserDetailsImpl
         if (userExists(user.username)) throw UsernameAlreadyExistsException("User with username '${user.username}' already exists!")
-        (user as UserDetailsImpl)
+        user
             .apply { user.password = passwordEncoder.encode(user.password) }
             .also(userDetailsRepository::save)
     }
+
+    fun createUser(username: String, password: String) {
+        val etherAccount = etherAccountRepository.save(generateEtherAccount())
+        createUser(UserDetailsImpl(username, password, etherAccount))
+    }
+
+    private fun generateEtherAccount() = EtherAccount("A_ETH_PK") // TODO: Pull from API
 
     override fun updateUser(user: UserDetails) {
         if (!userExists(user.username)) throw UsernameNotFoundException("User with username '${user.username}' not found!")

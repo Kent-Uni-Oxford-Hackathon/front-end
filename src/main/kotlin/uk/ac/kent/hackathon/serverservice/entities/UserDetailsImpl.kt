@@ -3,6 +3,7 @@ package uk.ac.kent.hackathon.serverservice.entities
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.OneToOne
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
@@ -12,6 +13,7 @@ data class UserDetailsImpl(
     private val username: String,
     @Column(nullable = false)
     private var password: String,
+    @OneToOne var etherAccount: EtherAccount,
 ) : UserDetails {
     override fun getAuthorities() = emptyList<GrantedAuthority>()
 

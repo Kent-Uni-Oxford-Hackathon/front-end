@@ -5,6 +5,7 @@ import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import uk.ac.kent.hackathon.serverservice.entities.EtherAccount
 import uk.ac.kent.hackathon.serverservice.entities.Token
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 import uk.ac.kent.hackathon.serverservice.repository.TokenRepository
@@ -27,10 +28,12 @@ class TokenServiceTest {
         private const val USERNAME_B: String = "bTokenString"
         private const val PASSWORD: String = "aTokenString"
         private const val DESCRIPTION: String = "aTokenString"
+        private const val ETH_PK_HASH = "aPkHash"
         private val CATEGORIES: Collection<String> = listOf("art", "science")
         private val TIMESTAMP: Timestamp = Timestamp(currentTimeMillis())
-        private val USER_A: UserDetailsImpl = UserDetailsImpl(USERNAME_A, PASSWORD)
-        private val USER_B: UserDetailsImpl = UserDetailsImpl(USERNAME_B, PASSWORD)
+        private val ETHER_ACCOUNT = EtherAccount(ETH_PK_HASH)
+        private val USER_A: UserDetailsImpl = UserDetailsImpl(USERNAME_A, PASSWORD, ETHER_ACCOUNT)
+        private val USER_B: UserDetailsImpl = UserDetailsImpl(USERNAME_B, PASSWORD, ETHER_ACCOUNT)
         private val TOKEN = Token(TOKEN_ID, TOKEN_STRING, USER_A, CATEGORIES, TIMESTAMP, DESCRIPTION)
     }
 

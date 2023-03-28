@@ -15,15 +15,13 @@ import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
-import org.springframework.security.core.userdetails.UserDetails
-import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 import uk.ac.kent.hackathon.serverservice.layouts.MainLayout
-import uk.ac.kent.hackathon.serverservice.services.UserDetailsService
+import uk.ac.kent.hackathon.serverservice.services.AccountsService
 
 
 @Route("signup", layout = MainLayout::class)
 @AnonymousAllowed
-class SignupRoute(userDetailsService: UserDetailsService) : VerticalLayout() {
+class SignupRoute(accountsService: AccountsService) : VerticalLayout() {
     init {
         val title = H3("Signup")
         val username = TextField("Username").apply {
@@ -41,9 +39,8 @@ class SignupRoute(userDetailsService: UserDetailsService) : VerticalLayout() {
             }
         val errorMessageField = Span()
         val submitButton = Button("Sign up") {
-            val user = UserDetailsImpl(username.value, password.value)
-            userDetailsService.createUser(user)
-            showSuccess(user)
+            accountsService.createUser(username.value, password.value)
+            showSuccess(username.value)
         }.apply {
             setWidthFull()
             addThemeVariants(LUMO_PRIMARY)
@@ -58,8 +55,8 @@ class SignupRoute(userDetailsService: UserDetailsService) : VerticalLayout() {
         setSizeFull()
     }
 
-    private fun showSuccess(userDetails: UserDetails) {
-        val notification = show("Data saved, welcome " + userDetails.username)
+    private fun showSuccess(username: String) {
+        val notification = show("Data saved, welcome $username")
         notification.addThemeVariants(LUMO_SUCCESS)
         UI.getCurrent().navigate(DashboardRoute::class.java)
     }
