@@ -17,9 +17,13 @@ import uk.ac.kent.hackathon.serverservice.domain.NFTResponse
 import uk.ac.kent.hackathon.serverservice.domain.Token
 import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
 import uk.ac.kent.hackathon.serverservice.entities.EtherAccount
+import uk.ac.kent.hackathon.serverservice.entities.TokenDescriptionPair
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
+import uk.ac.kent.hackathon.serverservice.repository.TokenDescriptionPairRepository
 import java.lang.System.currentTimeMillis
 import java.net.URI
+import java.util.Optional.empty
+import java.util.Optional.of
 
 @SpringBootTest(classes = [TokenService::class])
 class TokenServiceTest {
@@ -28,6 +32,7 @@ class TokenServiceTest {
         private const val ETHERSCAN_API_KEY = "anAPIKey"
         private const val USERNAME = "bTokenString"
         private const val PASSWORD = "aTokenString"
+        private const val DESCRIPTION = "aDescription"
         private const val HEX_CHARS = "123456789abcdef"
     }
 
@@ -36,6 +41,9 @@ class TokenServiceTest {
 
     @MockBean
     private lateinit var restTemplate: RestTemplate
+
+    @MockBean
+    private lateinit var tokenDescriptionPairRepository: TokenDescriptionPairRepository
 
     @Autowired
     private lateinit var tokenService: TokenService
@@ -143,6 +151,10 @@ class TokenServiceTest {
         then(restTemplate).should(times(1))
             .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
         then(restTemplate).shouldHaveNoMoreInteractions()
+        then(tokenDescriptionPairRepository).should(times(1)).findById(1)
+        then(tokenDescriptionPairRepository).should(times(1)).findById(2)
+        then(tokenDescriptionPairRepository).should(times(1)).findById(3)
+        then(tokenDescriptionPairRepository).shouldHaveNoMoreInteractions()
     }
 
     @Test
@@ -196,6 +208,7 @@ class TokenServiceTest {
         val expectedResponse = TokenNFTTxResponse(1, "OK", nftResponses)
         given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
             .willReturn(expectedResponse)
+        given(tokenDescriptionPairRepository.findById(1)).willReturn(empty())
 
         val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
 
@@ -204,6 +217,52 @@ class TokenServiceTest {
         then(restTemplate).should(times(1))
             .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
         then(restTemplate).shouldHaveNoMoreInteractions()
+        then(tokenDescriptionPairRepository).should(times(nftResponses.size)).findById(1)
+        then(tokenDescriptionPairRepository).shouldHaveNoMoreInteractions()
     }
+
+    @Test
+    fun givenDescriptionWhenGetTokensByUserThenReturnWithDescription() {
+        val nftResponses = listOf(
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                etherAccount.ethPkHash,
+                1,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                1017393,
+                2501295302,
+                1015388,
+                3711302,
+                "deprecated",
+                1915
+            ),
+        )
+
+        etherscanConfig.etherscanApiKey = ETHERSCAN_API_KEY
+        val expectedResponse = TokenNFTTxResponse(1, "OK", nftResponses)
+        given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
+            .willReturn(expectedResponse)
+        given(tokenDescriptionPairRepository.findById(1)).willReturn(of(TokenDescriptionPair(1, DESCRIPTION)))
+
+        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+
+        assertThat(tokensByUser, contains(Token(1, userDetailsImpl, DESCRIPTION)))
+
+        then(restTemplate).should(times(1))
+            .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
+        then(restTemplate).shouldHaveNoMoreInteractions()
+        then(tokenDescriptionPairRepository).should(times(1)).findById(1)
+        then(tokenDescriptionPairRepository).shouldHaveNoMoreInteractions()
+    }
+
 
 }
