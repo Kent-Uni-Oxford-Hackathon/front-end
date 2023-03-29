@@ -38,7 +38,7 @@ class AccountsService(
         createUser(UserDetailsImpl(username, password, etherAccount))
     }
 
-    private fun generateEtherAccount() = EtherAccount("A_ETH_PK") // TODO: Pull from API
+    private fun generateEtherAccount() = EtherAccount("0xd05B7dC35264A651cF0Baf51B9f26adCf103c824") // TODO: Pull from API
 
     override fun updateUser(user: UserDetails) {
         if (!userExists(user.username)) throw UsernameNotFoundException("User with username '${user.username}' not found!")
