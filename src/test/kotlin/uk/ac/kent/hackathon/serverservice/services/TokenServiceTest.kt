@@ -73,7 +73,7 @@ class TokenServiceTest {
 
 
     @Test
-    fun givenOwnedTokenWhenGetTokensByUserThenReturnOwnedToken() {
+    fun givenOwnedTokenWhenGetTokensByUserAndCategoryThenReturnOwnedToken() {
         val nftResponses = listOf(
             NFTResponse(
                 3180580,
@@ -159,7 +159,7 @@ class TokenServiceTest {
     }
 
     @Test
-    fun givenSentAllTokensWhenGetTokensByUserThenReturnNoTokens() {
+    fun givenSentAllTokensWhenGetTokensByUserAndCategoryThenReturnNoTokens() {
         val nftResponses = listOf(
             NFTResponse(
                 3180580,
@@ -223,7 +223,7 @@ class TokenServiceTest {
     }
 
     @Test
-    fun givenDescriptionWhenGetTokensByUserThenReturnWithDescription() {
+    fun givenDescriptionWhenGetTokensByUserAndCategoryThenReturnWithDescription() {
         val nftResponses = listOf(
             NFTResponse(
                 3180580,
