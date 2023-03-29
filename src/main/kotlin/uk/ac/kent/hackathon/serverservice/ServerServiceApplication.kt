@@ -22,7 +22,7 @@ class ServerServiceApplication(
     fun createDefaultUsers(userDetailsRepository: UserDetailsRepository, etherAccountRepository: EtherAccountRepository) = ApplicationRunner {
         val etherAccount = EtherAccount("A_PK_HASH")
         val joEtherAccount = EtherAccount("0x60ec0d256278c4d75dcc5bb607494ab164825cd9")
-        val demoEtherAccount = EtherAccount("0xd05B7dC35264A651cF0Baf51B9f26adCf103c824")
+        val demoEtherAccount = EtherAccount("0xd05b7dc35264a651cf0baf51b9f26adcf103c824")
         etherAccountRepository.saveAll(listOf(etherAccount, joEtherAccount, demoEtherAccount))
         val password = passwordEncoder.encode(applicationConfig.defaultPassword)
         userDetailsRepository.save(UserDetailsImpl("admin", password, etherAccount))
