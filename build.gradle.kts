@@ -21,6 +21,7 @@ extra["vaadinVersion"] = "24.0.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("com.vaadin:vaadin-spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")

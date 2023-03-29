@@ -1,50 +1,209 @@
 package uk.ac.kent.hackathon.serverservice.services
 
+import org.apache.commons.lang3.RandomStringUtils.random
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.emptyCollectionOf
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder.fromHttpUrl
+import uk.ac.kent.hackathon.serverservice.config.EtherscanConfig
+import uk.ac.kent.hackathon.serverservice.domain.NFTResponse
+import uk.ac.kent.hackathon.serverservice.domain.Token
+import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
 import uk.ac.kent.hackathon.serverservice.entities.EtherAccount
-import uk.ac.kent.hackathon.serverservice.entities.Token
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
-import uk.ac.kent.hackathon.serverservice.repository.TokenRepository
 import java.lang.System.currentTimeMillis
-import java.sql.Timestamp
+import java.net.URI
 
 @SpringBootTest(classes = [TokenService::class])
 class TokenServiceTest {
 
-    @Autowired
-    lateinit var tokenService: TokenService
+    companion object {
+        private const val ETHERSCAN_API_KEY = "anAPIKey"
+        private const val USERNAME = "bTokenString"
+        private const val PASSWORD = "aTokenString"
+        private const val HEX_CHARS = "123456789abcdef"
+    }
 
     @MockBean
-    lateinit var tokenRepository: TokenRepository
+    private lateinit var etherscanConfig: EtherscanConfig
 
-    companion object {
-        private const val TOKEN_ID: String = "aTokenId"
-        private const val TOKEN_STRING: String = "aTokenString"
-        private const val USERNAME_A: String = "aTokenString"
-        private const val USERNAME_B: String = "bTokenString"
-        private const val PASSWORD: String = "aTokenString"
-        private const val DESCRIPTION: String = "aTokenString"
-        private const val ETH_PK_HASH = "aPkHash"
-        private val CATEGORIES: Collection<String> = listOf("art", "science")
-        private val TIMESTAMP: Timestamp = Timestamp(currentTimeMillis())
-        private val ETHER_ACCOUNT = EtherAccount(ETH_PK_HASH)
-        private val USER_A: UserDetailsImpl = UserDetailsImpl(USERNAME_A, PASSWORD, ETHER_ACCOUNT)
-        private val USER_B: UserDetailsImpl = UserDetailsImpl(USERNAME_B, PASSWORD, ETHER_ACCOUNT)
-        private val TOKEN = Token(TOKEN_ID, TOKEN_STRING, USER_A, CATEGORIES, TIMESTAMP, DESCRIPTION)
+    @MockBean
+    private lateinit var restTemplate: RestTemplate
+
+    @Autowired
+    private lateinit var tokenService: TokenService
+
+    private lateinit var etherAccount: EtherAccount
+    private lateinit var userDetailsImpl: UserDetailsImpl
+    private lateinit var getTransactionsEndpoint: URI
+
+    @BeforeEach
+    fun setUp() {
+        etherAccount = EtherAccount("0x${random(64, HEX_CHARS)}")
+        userDetailsImpl = UserDetailsImpl(USERNAME, PASSWORD, etherAccount)
+        getTransactionsEndpoint = fromHttpUrl("https://api-sepolia.etherscan.io/api")
+            .queryParam("module", "account")
+            .queryParam("action", "tokennfttx")
+            .queryParam("contractaddress", "0x05d1AD3ff7bed18e442AE9AcB34d967a1638dC71")
+            .queryParam("address", etherAccount.ethPkHash)
+            .queryParam("page", "1")
+            .queryParam("offset", "100")
+            .queryParam("startblock", "0")
+            .queryParam("endblock", "99999999")
+            .queryParam("sort", "asc")
+            .queryParam("apikey", etherscanConfig.etherscanApiKey)
+            .build().toUri()
+    }
+
+
+    @Test
+    fun givenOwnedTokenWhenGetTokensByUserThenReturnOwnedToken() {
+        val nftResponses = listOf(
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                etherAccount.ethPkHash,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                1,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                1017393,
+                2501295302,
+                1015388,
+                3711302,
+                "deprecated",
+                1915
+            ),
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                etherAccount.ethPkHash,
+                2,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                3,
+                2,
+                8,
+                2,
+                "deprecated",
+                5
+            ),
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                3,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                3,
+                2,
+                8,
+                2,
+                "deprecated",
+                5
+            )
+        )
+
+        etherscanConfig.etherscanApiKey = ETHERSCAN_API_KEY
+        val expectedResponse = TokenNFTTxResponse(1, "OK", nftResponses)
+        given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
+            .willReturn(expectedResponse)
+
+        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+
+        assertThat(tokensByUser, contains(Token(2, userDetailsImpl, "")))
+
+        then(restTemplate).should(times(1))
+            .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
+        then(restTemplate).shouldHaveNoMoreInteractions()
     }
 
     @Test
-    fun givenTokenWhenTransferTokenThenSaveUpdatedToken() {
-        val newToken = Token(TOKEN_ID, TOKEN_STRING, USER_B, CATEGORIES, TIMESTAMP, DESCRIPTION)
-        given(tokenRepository.save(any())).willReturn(newToken)
+    fun givenSentAllTokensWhenGetTokensByUserThenReturnNoTokens() {
+        val nftResponses = listOf(
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                etherAccount.ethPkHash,
+                1,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                1017393,
+                2501295302,
+                1015388,
+                3711302,
+                "deprecated",
+                1915
+            ),
+            NFTResponse(
+                3180580,
+                currentTimeMillis(),
+                "0x${random(64, HEX_CHARS)}",
+                10,
+                "0x${random(64, HEX_CHARS)}",
+                etherAccount.ethPkHash,
+                "0x${random(64, HEX_CHARS)}",
+                "0x${random(64, HEX_CHARS)}",
+                1,
+                "Geography Tokens",
+                "GEO",
+                0,
+                7,
+                3,
+                2,
+                8,
+                2,
+                "deprecated",
+                5
+            ),
+        )
 
-        tokenService.transferToken(TOKEN, USER_B)
+        etherscanConfig.etherscanApiKey = ETHERSCAN_API_KEY
+        val expectedResponse = TokenNFTTxResponse(1, "OK", nftResponses)
+        given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
+            .willReturn(expectedResponse)
 
-        then(tokenRepository).should(times(1)).save(newToken)
-        then(tokenRepository).shouldHaveNoMoreInteractions()
+        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+
+        assertThat(tokensByUser, emptyCollectionOf(Token::class.java))
+
+        then(restTemplate).should(times(1))
+            .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
+        then(restTemplate).shouldHaveNoMoreInteractions()
     }
+
 }

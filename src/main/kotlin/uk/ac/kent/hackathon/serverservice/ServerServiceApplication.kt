@@ -3,6 +3,7 @@ package uk.ac.kent.hackathon.serverservice
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.password.PasswordEncoder
 import uk.ac.kent.hackathon.serverservice.config.ApplicationConfig
@@ -20,10 +21,15 @@ class ServerServiceApplication(
     @Bean
     fun createAdminUser(userDetailsRepository: UserDetailsRepository, etherAccountRepository: EtherAccountRepository) = ApplicationRunner {
         val etherAccount = EtherAccount("A_PK_HASH")
-        etherAccountRepository.save(etherAccount)
+        val joEtherAccount = EtherAccount("0x60eC0d256278C4D75dCc5BB607494ab164825cd9")
+        etherAccountRepository.saveAll(listOf(etherAccount, joEtherAccount))
         val password = passwordEncoder.encode(applicationConfig.adminPassword)
         userDetailsRepository.save(UserDetailsImpl("admin", password, etherAccount))
+        userDetailsRepository.save(UserDetailsImpl("jo", password, joEtherAccount))
     }
+
+    @Bean
+    fun restTemplate() = RestTemplateBuilder().build()!!
 }
 
 fun main(args: Array<String>) {
