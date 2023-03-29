@@ -22,9 +22,9 @@ import java.util.Optional.of
 @Route("dashboard", layout = MainLayout::class)
 @PermitAll
 class DashboardRoute(
-    val tokenService: TokenService,
-    val contractConfig: ContractConfig,
-    val authenticationContext: AuthenticationContext,
+    private val tokenService: TokenService,
+    private val contractConfig: ContractConfig,
+    private val authenticationContext: AuthenticationContext,
 ) : VerticalLayout(), HasUrlParameter<String>, BeforeEnterObserver {
     init {
         val userDetailsImpl = authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).get()

@@ -33,6 +33,7 @@ class TokenServiceTest {
         private const val USERNAME = "bTokenString"
         private const val PASSWORD = "aTokenString"
         private const val DESCRIPTION = "aDescription"
+        private const val CATEGORY_ADDRESS = "aCategoryAddress"
         private const val HEX_CHARS = "123456789abcdef"
     }
 
@@ -59,7 +60,7 @@ class TokenServiceTest {
         getTransactionsEndpoint = fromHttpUrl("https://api-sepolia.etherscan.io/api")
             .queryParam("module", "account")
             .queryParam("action", "tokennfttx")
-            .queryParam("contractaddress", "0x05d1AD3ff7bed18e442AE9AcB34d967a1638dC71")
+            .queryParam("contractaddress", CATEGORY_ADDRESS)
             .queryParam("address", etherAccount.ethPkHash)
             .queryParam("page", "1")
             .queryParam("offset", "100")
@@ -81,7 +82,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 etherAccount.ethPkHash,
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 "0x${random(64, HEX_CHARS)}",
                 1,
                 "Geography Tokens",
@@ -102,7 +103,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 "0x${random(64, HEX_CHARS)}",
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 etherAccount.ethPkHash,
                 2,
                 "Geography Tokens",
@@ -123,7 +124,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 "0x${random(64, HEX_CHARS)}",
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 "0x${random(64, HEX_CHARS)}",
                 3,
                 "Geography Tokens",
@@ -144,9 +145,9 @@ class TokenServiceTest {
         given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
             .willReturn(expectedResponse)
 
-        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+        val tokensByUserAndCategory = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
 
-        assertThat(tokensByUser, contains(Token(2, userDetailsImpl, "")))
+        assertThat(tokensByUserAndCategory, contains(Token(2, userDetailsImpl, "")))
 
         then(restTemplate).should(times(1))
             .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
@@ -167,7 +168,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 "0x${random(64, HEX_CHARS)}",
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 etherAccount.ethPkHash,
                 1,
                 "Geography Tokens",
@@ -188,7 +189,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 etherAccount.ethPkHash,
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 "0x${random(64, HEX_CHARS)}",
                 1,
                 "Geography Tokens",
@@ -210,7 +211,7 @@ class TokenServiceTest {
             .willReturn(expectedResponse)
         given(tokenDescriptionPairRepository.findById(1)).willReturn(empty())
 
-        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
 
         assertThat(tokensByUser, emptyCollectionOf(Token::class.java))
 
@@ -231,7 +232,7 @@ class TokenServiceTest {
                 10,
                 "0x${random(64, HEX_CHARS)}",
                 "0x${random(64, HEX_CHARS)}",
-                "0x${random(64, HEX_CHARS)}",
+                CATEGORY_ADDRESS,
                 etherAccount.ethPkHash,
                 1,
                 "Geography Tokens",
@@ -253,7 +254,7 @@ class TokenServiceTest {
             .willReturn(expectedResponse)
         given(tokenDescriptionPairRepository.findById(1)).willReturn(of(TokenDescriptionPair(1, DESCRIPTION)))
 
-        val tokensByUser = tokenService.getTokensByUser(userDetailsImpl)
+        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
 
         assertThat(tokensByUser, contains(Token(1, userDetailsImpl, DESCRIPTION)))
 
