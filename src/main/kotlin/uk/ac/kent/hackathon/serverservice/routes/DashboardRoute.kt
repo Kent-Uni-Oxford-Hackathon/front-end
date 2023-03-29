@@ -1,6 +1,7 @@
 package uk.ac.kent.hackathon.serverservice.routes
 
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.H3
@@ -21,9 +22,10 @@ class DashboardRoute(tokenService: TokenService, authenticationContext: Authenti
         val userDetailsImpl = authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).get()
 
         val title = H2("Dashboard")
+        val etherscanLink = Anchor("https://sepolia.etherscan.io/address/${userDetailsImpl.etherAccount.ethPkHash}", userDetailsImpl.etherAccount.ethPkHash)
         val nftHeading = H3("My NFTs")
 
-        val div = Div(title, nftHeading, grid(tokenService, userDetailsImpl)).apply {
+        val div = Div(title, etherscanLink, nftHeading, grid(tokenService, userDetailsImpl)).apply {
             maxWidth = "800px"
             setWidthFull()
         }
