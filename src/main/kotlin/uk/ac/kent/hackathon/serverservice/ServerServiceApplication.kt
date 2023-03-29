@@ -19,12 +19,14 @@ class ServerServiceApplication(
 ) {
 
     @Bean
-    fun createAdminUser(userDetailsRepository: UserDetailsRepository, etherAccountRepository: EtherAccountRepository) = ApplicationRunner {
+    fun createDefaultUsers(userDetailsRepository: UserDetailsRepository, etherAccountRepository: EtherAccountRepository) = ApplicationRunner {
         val etherAccount = EtherAccount("A_PK_HASH")
         val joEtherAccount = EtherAccount("0x60ec0d256278c4d75dcc5bb607494ab164825cd9")
-        etherAccountRepository.saveAll(listOf(etherAccount, joEtherAccount))
-        val password = passwordEncoder.encode(applicationConfig.adminPassword)
+        val demoEtherAccount = EtherAccount("0xd05B7dC35264A651cF0Baf51B9f26adCf103c824")
+        etherAccountRepository.saveAll(listOf(etherAccount, joEtherAccount, demoEtherAccount))
+        val password = passwordEncoder.encode(applicationConfig.defaultPassword)
         userDetailsRepository.save(UserDetailsImpl("admin", password, etherAccount))
+        userDetailsRepository.save(UserDetailsImpl("demo", password, demoEtherAccount))
         userDetailsRepository.save(UserDetailsImpl("jo", password, joEtherAccount))
     }
 

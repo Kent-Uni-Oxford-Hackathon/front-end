@@ -9,6 +9,6 @@ class ApplicationConfig {
     @Value("\${application.name}")
     lateinit var applicationName: String
 
-    @Value("\${application.adminPassword}")
-    lateinit var adminPassword: String
+    @Value("\${application.defaultPassword}")
+    lateinit var defaultPassword: String
 }
