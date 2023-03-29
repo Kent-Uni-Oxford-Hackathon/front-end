@@ -19,12 +19,19 @@ import uk.ac.kent.hackathon.serverservice.services.TokenService
 
 @Route("dashboard", layout = MainLayout::class)
 @PermitAll
-class DashboardRoute(tokenService: TokenService, authenticationContext: AuthenticationContext, contractConfig: ContractConfig) : VerticalLayout() {
+class DashboardRoute(
+    tokenService: TokenService,
+    authenticationContext: AuthenticationContext,
+    contractConfig: ContractConfig
+) : VerticalLayout() {
     init {
         val userDetailsImpl = authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).get()
 
         val title = H2("Dashboard")
-        val etherscanLink = Anchor("https://sepolia.etherscan.io/address/${userDetailsImpl.etherAccount.ethPkHash}", userDetailsImpl.etherAccount.ethPkHash)
+        val etherscanLink = Anchor(
+            "https://sepolia.etherscan.io/address/${userDetailsImpl.etherAccount.ethPkHash}",
+            userDetailsImpl.etherAccount.ethPkHash
+        )
         val nftHeading = H3("My NFTs")
 
         val div = Div(title, etherscanLink, nftHeading, grid(tokenService, userDetailsImpl, contractConfig)).apply {
@@ -39,13 +46,16 @@ class DashboardRoute(tokenService: TokenService, authenticationContext: Authenti
         tokenService: TokenService,
         userDetailsImpl: UserDetailsImpl,
         contractConfig: ContractConfig
-    ): Grid<Token> {
-        val tokensGrid = Grid(Token::class.java, false)
-        tokensGrid.addColumn(Token::tokenId).setHeader("ID")
-        tokensGrid.addColumn(Token::description).setHeader("Description")
-        tokensGrid.addComponentColumn { Anchor("https://sepolia.etherscan.io/nft/${contractConfig.address}/${it.tokenId}", "Details") }
-            .setHeader("").textAlign = END
-        tokensGrid.setItems(tokenService.getTokensByUser(userDetailsImpl))
-        return tokensGrid
-    }
+    ) = Grid(Token::class.java, false)
+        .apply { addColumn(Token::tokenId).setHeader("ID") }
+        .apply { addColumn(Token::description).setHeader("Description") }
+        .apply {
+            addComponentColumn {
+                Anchor(
+                    "https://sepolia.etherscan.io/nft/${contractConfig.address}/${it.tokenId}",
+                    "Details"
+                )
+            }.setHeader("").textAlign = END
+        }
+        .apply { setItems(tokenService.getTokensByUser(userDetailsImpl)) }
 }
