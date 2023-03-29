@@ -26,7 +26,7 @@ class AccountsServiceTest {
     companion object {
         private const val USERNAME = "aUsername"
         private const val PASSWORD = "aPassword"
-        private const val ETH_PK_HASH = "0xd05B7dC35264A651cF0Baf51B9f26adCf103c824"
+        private const val ETH_PK_HASH = "0xd05b7dc35264a651cf0baf51b9f26adcf103c824"
     }
 
     private lateinit var etherAccount: EtherAccount

@@ -28,9 +28,9 @@ class TokenService(
                     ?: ""
                 val token = Token(nftResponse.tokenId, userDetailsImpl, description)
                 acc.apply {
-                    when (userDetailsImpl.etherAccount.ethPkHash) {
-                        nftResponse.to -> add(token)
-                        nftResponse.from -> remove(token)
+                    when (userDetailsImpl.etherAccount.ethPkHash.lowercase()) {
+                        nftResponse.to.lowercase() -> add(token)
+                        nftResponse.from.lowercase() -> remove(token)
                     }
                 }
             }
