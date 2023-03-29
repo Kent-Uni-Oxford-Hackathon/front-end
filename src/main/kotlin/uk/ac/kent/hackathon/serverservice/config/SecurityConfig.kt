@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import uk.ac.kent.hackathon.serverservice.routes.LoginRoute
 
 @EnableWebSecurity
@@ -14,6 +15,7 @@ import uk.ac.kent.hackathon.serverservice.routes.LoginRoute
 class SecurityConfig : VaadinWebSecurity() {
 
     override fun configure(http: HttpSecurity) {
+        http.authorizeHttpRequests().requestMatchers(AntPathRequestMatcher("/img/**")).permitAll()
         super.configure(http)
         setLoginView(http, LoginRoute::class.java)
         http.formLogin().defaultSuccessUrl("/dashboard", true)

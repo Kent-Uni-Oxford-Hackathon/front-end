@@ -2,16 +2,20 @@ package uk.ac.kent.hackathon.serverservice.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
+import uk.ac.kent.hackathon.serverservice.domain.Contract
 
 @Configuration
 class ContractConfig {
-    @Value("\${contract.names}")
-    lateinit var names: Array<String>
+    @Value("\${contract.categories}")
+    lateinit var categories: Array<String>
+
+    @Value("\${contract.imagePaths}")
+    lateinit var imagePaths: Array<String>
 
     @Value("\${contract.addresses}")
-    lateinit var address: Array<String>
+    lateinit var addresses: Array<String>
 
-    fun getCategoriesToAddressPairs(): List<Pair<String, String>> {
-        return names.foldIndexed(mutableListOf()) { index, acc, s -> acc.apply { add(s to address[index]) } }
+    fun getCategoriesToAddressPairs(): List<Contract> {
+        return categories.foldIndexed(mutableListOf()) { index, acc, category -> acc.apply { add(Contract(category, addresses[index], imagePaths[index])) } }
     }
 }

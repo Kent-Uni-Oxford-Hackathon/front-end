@@ -49,10 +49,14 @@ class DashboardRoute(
         tokenService: TokenService,
         userDetailsImpl: UserDetailsImpl,
         contractAddress: String,
+        contractImagePath: String,
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
         tokensGrid.addColumn(Token::description).setHeader("Description")
+        tokensGrid.addComponentColumn {
+            Image("/img/$contractImagePath", "NFT Image")
+        }.setHeader("Preview")
         tokensGrid.addComponentColumn {
             Anchor(
                 "https://sepolia.etherscan.io/nft/$contractAddress/${it.tokenId}",
@@ -71,7 +75,7 @@ class DashboardRoute(
 
     override fun beforeEnter(event: BeforeEnterEvent?) {
         val comboBox = ComboBox<String>("Category")
-        comboBox.setItems(contractConfig.names.asList())
+        comboBox.setItems(contractConfig.categories.asList())
         comboBox.addValueChangeListener { valueChangeEvent ->
             val page = UI.getCurrent().page
             page.fetchCurrentURL {
@@ -85,8 +89,8 @@ class DashboardRoute(
         if (chosenCategory.isEmpty) {
             add(H4("Select a category"))
         } else {
-            val contractAddress = contractConfig.getCategoriesToAddressPairs().associate { it }[chosenCategory.get()]!!
-            add(grid(tokenService, userDetailsImpl, contractAddress))
+            val contract = contractConfig.getCategoriesToAddressPairs().first { it.category == chosenCategory.get() }
+            add(grid(tokenService, userDetailsImpl, contract.address, contract.imagePath))
         }
 
     }
