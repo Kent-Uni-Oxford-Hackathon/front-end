@@ -1,5 +1,6 @@
 package uk.ac.kent.hackathon.serverservice.routes
 
+import com.vaadin.flow.component.grid.ColumnTextAlign.END
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.html.Div
@@ -42,7 +43,8 @@ class DashboardRoute(tokenService: TokenService, authenticationContext: Authenti
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
         tokensGrid.addColumn(Token::description).setHeader("Description")
-        tokensGrid.addComponentColumn { Anchor("https://sepolia.etherscan.io/nft/${contractConfig.address}/${it.tokenId}", "Details") }.setHeader("Description")
+        tokensGrid.addComponentColumn { Anchor("https://sepolia.etherscan.io/nft/${contractConfig.address}/${it.tokenId}", "Details") }
+            .setHeader("").textAlign = END
         tokensGrid.setItems(tokenService.getTokensByUser(userDetailsImpl))
         return tokensGrid
     }
