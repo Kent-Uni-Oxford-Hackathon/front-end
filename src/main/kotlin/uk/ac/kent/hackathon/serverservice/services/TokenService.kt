@@ -1,6 +1,5 @@
 package uk.ac.kent.hackathon.serverservice.services
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
@@ -10,23 +9,18 @@ import uk.ac.kent.hackathon.serverservice.domain.NFTResponse
 import uk.ac.kent.hackathon.serverservice.domain.Token
 import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
-import uk.ac.kent.hackathon.serverservice.repository.TokenDescriptionPairRepository
 
 @Service
 class TokenService(
     private val etherscanConfig: EtherscanConfig,
-    private val restTemplate: RestTemplate,
-    private val tokenDescriptionPairRepository: TokenDescriptionPairRepository
+    private val restTemplate: RestTemplate
 ) {
 
     fun getTokensByUserAndCategory(userDetailsImpl: UserDetailsImpl, contractAddress: String) =
         restTemplate
             .getForObject<TokenNFTTxResponse>(uriComponents(userDetailsImpl, contractAddress).toUri()).result
             .fold<NFTResponse, MutableList<Token>>(mutableListOf()) { acc, nftResponse ->
-                val description = tokenDescriptionPairRepository.findByIdOrNull(nftResponse.tokenId)
-                    ?.description
-                    ?: ""
-                val token = Token(nftResponse.tokenId, userDetailsImpl, description)
+                val token = Token(nftResponse.tokenId, userDetailsImpl)
                 acc.apply {
                     when (userDetailsImpl.etherAccount.ethPkHash.lowercase()) {
                         nftResponse.to.lowercase() -> add(token)

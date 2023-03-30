@@ -53,7 +53,7 @@ class DashboardRoute(
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
-        tokensGrid.addColumn(Token::description).setHeader("Description")
+        tokensGrid.addColumn { "This is a ${chosenCategory.get()} token owned by ${it.owner.username}" }.setHeader("Description")
         tokensGrid.addComponentColumn {
             Image("/img/$contractImagePath", "NFT Image")
         }.setHeader("Preview")
