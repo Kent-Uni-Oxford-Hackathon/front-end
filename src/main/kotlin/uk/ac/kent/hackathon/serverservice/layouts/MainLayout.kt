@@ -6,17 +6,15 @@ import com.vaadin.flow.component.dependency.StyleSheet
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER
-import com.vaadin.flow.component.orderedlayout.FlexLayout
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.spring.security.AuthenticationContext
-import uk.ac.kent.hackathon.serverservice.config.ApplicationConfig
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 
 @StyleSheet("/assets/styles/master.css")
-class MainLayout(authenticationContext: AuthenticationContext, applicationConfig: ApplicationConfig) : AppLayout() {
+class MainLayout(authenticationContext: AuthenticationContext) : AppLayout() {
 
     init {
-        authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).map {
+        authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).ifPresent {
             val welcomeMessage = Span("Welcome ${it.username}")
             val logoutButton = Button("Logout") { authenticationContext.logout() }
 
@@ -26,7 +24,6 @@ class MainLayout(authenticationContext: AuthenticationContext, applicationConfig
             navbar.alignItems = CENTER
             navbar.justifyContentMode = FlexComponent.JustifyContentMode.END
             addToNavbar(navbar)
-
         }
 
     }
