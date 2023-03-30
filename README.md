@@ -77,6 +77,10 @@ Due to time constraints the send functionality was not completed. While this was
 
 To ensure the system is secure analysis of both the security of the front end code base and the smart contracts would have to be performed. This is particularly accute in the case of deployment of the smart contracts to a main-net. 
 
+### Creation of a Leaderboard
+
+Through the contract address the owner of the vairious tokens can be retrieved. This would allow us to create a leaderboard of users to show who is the largest holder of the tokens. 
+
 ### Minor Issues and Unresolved Bugs
 
 These can be found in the [Issue](https://github.com/Kent-Uni-Oxford-Hackathon/front-end/issues) section of this repository. 
