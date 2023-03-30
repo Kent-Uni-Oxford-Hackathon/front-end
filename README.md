@@ -102,6 +102,12 @@ These can be found in the [Issue](https://github.com/Kent-Uni-Oxford-Hackathon/f
 
 ## Screenshots 
 
+<img width="1434" alt="Computer Science tokens" src="https://user-images.githubusercontent.com/46780513/228838053-1f699c14-7728-4bbb-a216-facc62b5e9f5.png">
+<img width="1431" alt="Dashboard" src="https://user-images.githubusercontent.com/46780513/228838057-e605e501-c576-4a4b-a449-e007eed80366.png">
+<img width="1362" alt="Login" src="https://user-images.githubusercontent.com/46780513/228838059-96480612-d198-4918-b068-bc8ff730caa6.png">
+<img width="1436" alt="Science tokens" src="https://user-images.githubusercontent.com/46780513/228838062-d9e1821f-e8e2-486d-9632-c5c60ee25427.png">
+
+
 ## Server Service Application
 ### Running
 - JDK 17 or newer required
