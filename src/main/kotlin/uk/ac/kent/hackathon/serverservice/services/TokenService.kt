@@ -5,6 +5,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import org.springframework.web.util.UriComponentsBuilder.fromHttpUrl
 import uk.ac.kent.hackathon.serverservice.config.EtherscanConfig
+import uk.ac.kent.hackathon.serverservice.domain.Contract
 import uk.ac.kent.hackathon.serverservice.domain.NFTResponse
 import uk.ac.kent.hackathon.serverservice.domain.Token
 import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
@@ -16,11 +17,11 @@ class TokenService(
     private val restTemplate: RestTemplate
 ) {
 
-    fun getTokensByUserAndCategory(userDetailsImpl: UserDetailsImpl, contractAddress: String) =
+    fun getTokensByUserAndCategory(userDetailsImpl: UserDetailsImpl, contract: Contract) =
         restTemplate
-            .getForObject<TokenNFTTxResponse>(uriComponents(userDetailsImpl, contractAddress).toUri()).result
+            .getForObject<TokenNFTTxResponse>(uriComponents(userDetailsImpl, contract.address).toUri()).result
             .fold<NFTResponse, MutableList<Token>>(mutableListOf()) { acc, nftResponse ->
-                val token = Token(nftResponse.tokenId, userDetailsImpl)
+                val token = Token(nftResponse.tokenId, userDetailsImpl, contract)
                 acc.apply {
                     when (userDetailsImpl.etherAccount.ethPkHash.lowercase()) {
                         nftResponse.to.lowercase() -> add(token)

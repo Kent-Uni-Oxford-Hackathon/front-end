@@ -15,7 +15,7 @@ import uk.ac.kent.hackathon.serverservice.routes.LoginRoute
 class SecurityConfig : VaadinWebSecurity() {
 
     override fun configure(http: HttpSecurity) {
-        http.authorizeHttpRequests().requestMatchers(AntPathRequestMatcher("/img/**")).permitAll()
+        http.authorizeHttpRequests().requestMatchers(AntPathRequestMatcher("/assets/**")).permitAll()
         super.configure(http)
         setLoginView(http, LoginRoute::class.java)
         http.formLogin().defaultSuccessUrl("/dashboard", true)
