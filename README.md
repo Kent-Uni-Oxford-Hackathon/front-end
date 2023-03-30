@@ -1,5 +1,12 @@
 # Knowledge Token Hackathon - Front End Challenge
 
+# Table of Contents
+1. [Our Team](#)
+2. [Features](#example2)
+3. [Future Work](#third-example)
+4. [Screen Shots](#fourth-examplehttpwwwfourthexamplecom)
+5. [Server Service Application]()
+
 ## Our Team
 
 ### Joseph Kearney 
@@ -92,6 +99,8 @@ Due to the Etherscan API call limit for free access this limits us to 5 API call
 ### Minor Issues and Unresolved Bugs
 
 These can be found in the [Issue](https://github.com/Kent-Uni-Oxford-Hackathon/front-end/issues) section of this repository. 
+
+## Screenshots 
 
 ## Server Service Application
 ### Running
