@@ -47,6 +47,7 @@ class DashboardRoute(
     }
 
     private var chosenCategory = empty<String>()
+    private var chosenGroup = empty<String>()
 
     private fun grid(
         tokenService: TokenService,
@@ -54,9 +55,10 @@ class DashboardRoute(
         contracts: Collection<Contract>
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
+        tokensGrid.height = "800px"
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
         tokensGrid.addColumn {
-            "This is a ${chosenCategory.get()} token owned by ${it.owner.username}"
+            "This is a ${it.contract.category} token owned by ${it.owner.username}"
         }.setHeader("Description")
         tokensGrid.addComponentColumn {
             Image("/assets/img/${it.contract.imagePath}", "NFT Image")
@@ -65,7 +67,7 @@ class DashboardRoute(
             Div(Anchor("https://sepolia.etherscan.io/nft/${it.contract.address}/${it.tokenId}", "Details"),
                 Button("Send") { Notification.show("This is not implemented yet!") })
         }.setHeader("").textAlign = END
-        tokensGrid.setItems(contracts.flatMap { tokenService.getTokensByUserAndCategory(userDetailsImpl, it) } )
+        tokensGrid.setItems(contracts.flatMap { tokenService.getTokensByUserAndCategory(userDetailsImpl, it) })
         return tokensGrid
     }
 
@@ -73,28 +75,59 @@ class DashboardRoute(
         chosenCategory = event.location.queryParameters.parameters["category"]
             ?.let { of(it[0]) }
             ?: empty()
+        chosenGroup = event.location.queryParameters.parameters["group"]
+            ?.let { of(it[0]) }
+            ?: empty()
     }
 
     override fun beforeEnter(event: BeforeEnterEvent?) {
-        val comboBox = ComboBox<String>("Category")
-        val items = contracts.map(Contract::category).toList().toMutableSet()
-        items.addAll(groups)
-        comboBox.setItems(items)
-        comboBox.addValueChangeListener { valueChangeEvent ->
+        val groupComboBox = ComboBox<String>("Group")
+        groupComboBox.setItems(groups)
+        val categoryComboBox = ComboBox<String>("Category")
+        chosenGroup.ifPresent { chosenGroup ->
+            categoryComboBox.setItems(contracts.filter { chosenGroup == it.group }.map { it.category })
+        }
+
+        chosenGroup.ifPresentOrElse({
+            groupComboBox.value = it
+        }, {
+            categoryComboBox.isReadOnly = true
+        })
+        chosenCategory.ifPresent {
+            categoryComboBox.value = it
+        }
+        groupComboBox.addValueChangeListener { valueChangeEvent ->
+            categoryComboBox.setItems(contracts.filter { it.group == valueChangeEvent.value }.map(Contract::category))
             val page = UI.getCurrent().page
             page.fetchCurrentURL {
-                val newLocation = "${it.path}?category=${valueChangeEvent.value}"
+                val newLocation = "${it.path}?group=${valueChangeEvent.value}"
                 page.executeJs("location.href=unescape('$newLocation')")
             }
         }
-        add(comboBox)
+
+        categoryComboBox.addValueChangeListener { valueChangeEvent ->
+            val page = UI.getCurrent().page
+            page.fetchCurrentURL {
+                val newLocation = "${it.path}?group=${chosenGroup.get()}&category=${valueChangeEvent.value}"
+                page.executeJs("location.href=unescape('$newLocation')")
+            }
+        }
+        add(groupComboBox, categoryComboBox)
 
         val userDetailsImpl = authenticationContext.getAuthenticatedUser(UserDetailsImpl::class.java).get()
-        if (chosenCategory.isEmpty) {
-            add(H4("Select a category"))
+        if (chosenGroup.isEmpty) {
+            add(H4("Select a group"))
         } else {
-            val contracts = contracts.filter { it.category == chosenCategory.get() || it.group == chosenCategory.get() }
-            add(grid(tokenService, userDetailsImpl, contracts))
+            val contractsToDisplay = if (chosenCategory.isPresent) {
+                contracts.filter {
+                    it.category == chosenCategory.get()
+                }
+            } else {
+                contracts.filter {
+                    it.group == chosenGroup.get()
+                }
+            }
+            add(grid(tokenService, userDetailsImpl, contractsToDisplay))
         }
 
     }

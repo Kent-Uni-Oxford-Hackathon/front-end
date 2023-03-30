@@ -11,7 +11,7 @@ class ContractComponent(private val contractConfig: ContractConfig) {
     @Bean
     fun contracts() = contractConfig.categories.foldIndexed(mutableListOf<Contract>()) { index, acc, category ->
         val name = category.split("-")
-        acc.apply { add(Contract(name[0], name[1], contractConfig.addresses[index], contractConfig.imagePaths[index])) }
+        acc.apply { add(Contract(name[1], name[0], contractConfig.addresses[index], contractConfig.imagePaths[index])) }
     }
 
     @Bean
