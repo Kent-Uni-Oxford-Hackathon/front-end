@@ -85,6 +85,10 @@ To ensure the system is secure analysis of both the security of the front end co
 
 Through the contract address the owner of the vairious tokens can be retrieved. This would allow us to create a leaderboard of users to show who is the largest holder of the tokens. 
 
+### Fix API Call Limit. 
+
+Due to the Etherscan API call limit for free access this limits us to 5 API calls per second. This would need to be changed (perhaps using web3j) or an pro API key to be purchased.
+
 ### Minor Issues and Unresolved Bugs
 
 These can be found in the [Issue](https://github.com/Kent-Uni-Oxford-Hackathon/front-end/issues) section of this repository. 
