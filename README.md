@@ -26,7 +26,14 @@ A login and signup system has been developed. This contains the functionality so
 
 #### Dashboard
 
-A dashboard has been created to allow users to view their NFT tokens that are associated with their EOA. Links are also provided so that users can view their account and specific tokens on the Block Explorer Etherscan. This is dynamically genrated, so that if another client sends the token the dashboard will automatically update. All tokens generated are immutably stored currently on the Sepolia test net. 
+A dashboard has been created to allow users to view their NFT tokens that are associated with their EOA. Links are also provided so that users can view their account and specific tokens on the Block Explorer Etherscan. This is dynamically genrated, so that if another client sends the token the dashboard will automatically update. All tokens generated are immutably stored currently on the Sepolia test net. Users can search by four categories:
+
+- Maths
+- English 
+- Geography 
+- Science 
+
+Each of these categories has 4 associated tokens. The demo account given has at least one of each type. 
 
 #### NFT Deployment
 
