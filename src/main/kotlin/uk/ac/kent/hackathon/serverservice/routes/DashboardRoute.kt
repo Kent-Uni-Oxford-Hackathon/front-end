@@ -26,6 +26,7 @@ import java.util.Optional.of
 class DashboardRoute(
     private val tokenService: TokenService,
     private val contracts: Collection<Contract>,
+    private val groups: Collection<String>,
     private val authenticationContext: AuthenticationContext,
 ) : VerticalLayout(), HasUrlParameter<String>, BeforeEnterObserver {
     init {
@@ -50,8 +51,7 @@ class DashboardRoute(
     private fun grid(
         tokenService: TokenService,
         userDetailsImpl: UserDetailsImpl,
-        contractAddress: String,
-        contractImagePath: String,
+        contracts: Collection<Contract>
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
@@ -59,13 +59,13 @@ class DashboardRoute(
             "This is a ${chosenCategory.get()} token owned by ${it.owner.username}"
         }.setHeader("Description")
         tokensGrid.addComponentColumn {
-            Image("/assets/img/$contractImagePath", "NFT Image")
+            Image("/assets/img/${it.contract.imagePath}", "NFT Image")
         }.setHeader("Preview")
         tokensGrid.addComponentColumn {
-            Div(Anchor("https://sepolia.etherscan.io/nft/$contractAddress/${it.tokenId}", "Details"),
+            Div(Anchor("https://sepolia.etherscan.io/nft/${it.contract.address}/${it.tokenId}", "Details"),
                 Button("Send") { Notification.show("This is not implemented yet!") })
         }.setHeader("").textAlign = END
-        tokensGrid.setItems(tokenService.getTokensByUserAndCategory(userDetailsImpl, contractAddress))
+        tokensGrid.setItems(contracts.flatMap { tokenService.getTokensByUserAndCategory(userDetailsImpl, it) } )
         return tokensGrid
     }
 
@@ -77,7 +77,9 @@ class DashboardRoute(
 
     override fun beforeEnter(event: BeforeEnterEvent?) {
         val comboBox = ComboBox<String>("Category")
-        comboBox.setItems(contracts.map(Contract::category).toList())
+        val items = contracts.map(Contract::category).toList().toMutableSet()
+        items.addAll(groups)
+        comboBox.setItems(items)
         comboBox.addValueChangeListener { valueChangeEvent ->
             val page = UI.getCurrent().page
             page.fetchCurrentURL {
@@ -91,8 +93,8 @@ class DashboardRoute(
         if (chosenCategory.isEmpty) {
             add(H4("Select a category"))
         } else {
-            val contract = contracts.first { it.category == chosenCategory.get() }
-            add(grid(tokenService, userDetailsImpl, contract.address, contract.imagePath))
+            val contracts = contracts.filter { it.category == chosenCategory.get() || it.group == chosenCategory.get() }
+            add(grid(tokenService, userDetailsImpl, contracts))
         }
 
     }

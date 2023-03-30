@@ -10,6 +10,12 @@ class ContractComponent(private val contractConfig: ContractConfig) {
 
     @Bean
     fun contracts() = contractConfig.categories.foldIndexed(mutableListOf<Contract>()) { index, acc, category ->
-        acc.apply { add(Contract(category, contractConfig.addresses[index], contractConfig.imagePaths[index])) }
+        val name = category.split("-")
+        acc.apply { add(Contract(name[0], name[1], contractConfig.addresses[index], contractConfig.imagePaths[index])) }
+    }
+
+    @Bean
+    fun groups() = contracts().fold(mutableSetOf<String>()) {
+        acc, contract -> acc.apply { acc.add(contract.group) }
     }
 }
