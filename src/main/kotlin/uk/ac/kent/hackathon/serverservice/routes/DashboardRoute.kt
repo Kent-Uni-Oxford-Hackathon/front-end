@@ -59,7 +59,7 @@ class DashboardRoute(
             "This is a ${chosenCategory.get()} token owned by ${it.owner.username}"
         }.setHeader("Description")
         tokensGrid.addComponentColumn {
-            Image("/img/$contractImagePath", "NFT Image")
+            Image("/assets/img/$contractImagePath", "NFT Image")
         }.setHeader("Preview")
         tokensGrid.addComponentColumn {
             Div(Anchor("https://sepolia.etherscan.io/nft/$contractAddress/${it.tokenId}", "Details"),
