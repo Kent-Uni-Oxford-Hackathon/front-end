@@ -59,6 +59,28 @@ All the tokens seen in the accounts in the front end are deployed to the Sepolia
 
 ## Future Work
 
+While a majority of the full implementation of the token storage system was comnpleted there were several elements that would need to be completed in the future. 
+
+### Use of the Improved Smart Contracts 
+
+Two smart contracts that have been deployed by are currently not being used in the front end should be integrated. These smart contracts allows the Deployment of EducationNFTCore tokens. These tokens allow information about the reason a token was awarded along with the type and subtype of token. Any additional data can also be added. However due to the prohibitive cost of an API key that would be needed to gain this information as well as time restraints this meta data could not be used. This led to the deployment of the 16 unique NFT's. We appreciate this method is not the most efficient way to perform this action and therefore would like to change to the updated contracts in the near future. 
+
+### Creation of an Admin Access
+
+We would like to add an admin access account that can mint new tokens and distribute them to recipients through the front end client. This would require further work on all aspects of the project. 
+
+### Send Funtionality 
+
+Due to time constraints the send functionality was not completed. While this was attempted it was not integrated into the final demo version, the work required to gain this functionality from our current code base would be minimal. 
+
+### Security Analysis of the Code Base
+
+To ensure the system is secure analysis of both the security of the front end code base and the smart contracts would have to be performed. This is particularly accute in the case of deployment of the smart contracts to a main-net. 
+
+### Minor Issues and Unresolved Bugs
+
+These can be found in the [Issue](https://github.com/Kent-Uni-Oxford-Hackathon/front-end/issues) section of this repository. 
+
 ## Server Service Application
 ### Running
 - JDK 17 or newer required
