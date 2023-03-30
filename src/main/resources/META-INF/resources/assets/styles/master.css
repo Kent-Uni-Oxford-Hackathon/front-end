@@ -1,0 +1,15 @@
+.v-label h1 {
+    color: #FFFFFF;
+}
+
+.logo {
+    width: 50px;
+}
+
+.v-button-link span.v-button-caption,
+.v-link a span
+{
+    color: #E6BE5F;
+    text-decoration: none;
+
+}
