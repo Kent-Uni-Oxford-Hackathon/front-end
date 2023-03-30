@@ -1,11 +1,11 @@
 # Knowledge Token Hackathon - Front End Challenge
 
 # Table of Contents
-1. [Our Team](#)
-2. [Features](#example2)
-3. [Future Work](#third-example)
-4. [Screen Shots](#fourth-examplehttpwwwfourthexamplecom)
-5. [Server Service Application]()
+1. [Our Team](#our-team)
+2. [Features](#what-was-accomplished)
+3. [Future Work](#future-work)
+4. [Screen Shots](#screenshots)
+5. [Server Service Application](#server-service-application)
 
 ## Our Team
 
