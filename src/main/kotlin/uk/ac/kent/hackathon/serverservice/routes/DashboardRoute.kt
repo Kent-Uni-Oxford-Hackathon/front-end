@@ -1,10 +1,12 @@
 package uk.ac.kent.hackathon.serverservice.routes
 
 import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.ColumnTextAlign.END
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.*
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
@@ -53,15 +55,15 @@ class DashboardRoute(
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
-        tokensGrid.addColumn { "This is a ${chosenCategory.get()} token owned by ${it.owner.username}" }.setHeader("Description")
+        tokensGrid.addColumn {
+            "This is a ${chosenCategory.get()} token owned by ${it.owner.username}"
+        }.setHeader("Description")
         tokensGrid.addComponentColumn {
             Image("/img/$contractImagePath", "NFT Image")
         }.setHeader("Preview")
         tokensGrid.addComponentColumn {
-            Anchor(
-                "https://sepolia.etherscan.io/nft/$contractAddress/${it.tokenId}",
-                "Details"
-            )
+            Div(Anchor("https://sepolia.etherscan.io/nft/$contractAddress/${it.tokenId}", "Details"),
+                Button("Send") { Notification.show("This is not implemented yet!") })
         }.setHeader("").textAlign = END
         tokensGrid.setItems(tokenService.getTokensByUserAndCategory(userDetailsImpl, contractAddress))
         return tokensGrid
