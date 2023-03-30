@@ -10,7 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 import com.vaadin.flow.spring.security.AuthenticationContext
 import jakarta.annotation.security.PermitAll
-import uk.ac.kent.hackathon.serverservice.config.ContractConfig
+import uk.ac.kent.hackathon.serverservice.domain.Contract
 import uk.ac.kent.hackathon.serverservice.domain.Token
 import uk.ac.kent.hackathon.serverservice.entities.UserDetailsImpl
 import uk.ac.kent.hackathon.serverservice.layouts.MainLayout
@@ -23,7 +23,7 @@ import java.util.Optional.of
 @PermitAll
 class DashboardRoute(
     private val tokenService: TokenService,
-    private val contractConfig: ContractConfig,
+    private val contracts: Collection<Contract>,
     private val authenticationContext: AuthenticationContext,
 ) : VerticalLayout(), HasUrlParameter<String>, BeforeEnterObserver {
     init {
@@ -53,7 +53,7 @@ class DashboardRoute(
     ): Grid<Token> {
         val tokensGrid = Grid(Token::class.java, false)
         tokensGrid.addColumn(Token::tokenId).setHeader("ID")
-        tokensGrid.addColumn(Token::description).setHeader("Description")
+        tokensGrid.addColumn { "This is a ${chosenCategory.get()} token owned by ${it.owner.username}" }.setHeader("Description")
         tokensGrid.addComponentColumn {
             Image("/img/$contractImagePath", "NFT Image")
         }.setHeader("Preview")
@@ -75,7 +75,7 @@ class DashboardRoute(
 
     override fun beforeEnter(event: BeforeEnterEvent?) {
         val comboBox = ComboBox<String>("Category")
-        comboBox.setItems(contractConfig.categories.asList())
+        comboBox.setItems(contracts.map(Contract::category).toList())
         comboBox.addValueChangeListener { valueChangeEvent ->
             val page = UI.getCurrent().page
             page.fetchCurrentURL {
@@ -89,7 +89,7 @@ class DashboardRoute(
         if (chosenCategory.isEmpty) {
             add(H4("Select a category"))
         } else {
-            val contract = contractConfig.getCategoriesToAddressPairs().first { it.category == chosenCategory.get() }
+            val contract = contracts.first { it.category == chosenCategory.get() }
             add(grid(tokenService, userDetailsImpl, contract.address, contract.imagePath))
         }
 
