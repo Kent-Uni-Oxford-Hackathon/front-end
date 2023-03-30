@@ -39,6 +39,10 @@ Each of these categories has 4 associated tokens. The demo account given has at 
 
 All the tokens seen in the accounts in the front end are deployed to the Sepolia test net. Links to all the token types as well as the Solidity code can be found in the [NFT-Knowledge-Token](https://github.com/Kent-Uni-Oxford-Hackathon/NFT-Knowledge-Token/blob/main/README.md) repo. Each contract deploys a different token for each of the different subject areas. 
 
+#### Mobile and PC Compatable
+
+Through the use of reactive web design, our application is designed for both phone and pc viewing. 
+
 ### Technologies Used
 
 - Solidity
