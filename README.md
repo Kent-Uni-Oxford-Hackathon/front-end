@@ -22,7 +22,7 @@ During the 3 day hackathon we completed the Front End challenge. During this tim
 
 #### Login and Signup 
 
-A login and signup system has been developed. This contains the functionality so that upon account creation an EOA(Externally Owned Account) is created for the user on the Ethereum blockchain to which tokens can be sent. For the sake of demonstration this functionality has been set so that an account created is paired with one of our existing [accounts](https://sepolia.etherscan.io/address/0xd05b7dc35264a651cf0baf51b9f26adcf103c824). 
+A login and signup system has been developed. This contains the functionality so that upon account creation an EOA(Externally Owned Account) is created for the user on the Ethereum blockchain to which tokens can be sent. For the sake of demonstration this functionality has been set so that an account created is paired with one of our existing [accounts](https://sepolia.etherscan.io/address/0xd05b7dc35264a651cf0baf51b9f26adcf103c824). The accounts created are cryptographically secure using the bcrypt cypher. 
 
 #### Dashboard
 
