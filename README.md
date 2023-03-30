@@ -87,7 +87,7 @@ Through the contract address the owner of the vairious tokens can be retrieved. 
 
 ### Fix API Call Limit. 
 
-Due to the Etherscan API call limit for free access this limits us to 5 API calls per second. This would need to be changed (perhaps using web3j) or an pro API key to be purchased.
+Due to the Etherscan API call limit for free access this limits us to 5 API calls per second. This would need to be changed perhaps using web3j or an pro API key to be purchased. This has created some minor limitations on the functionality of the dashboard that can be improved once resolved. 
 
 ### Minor Issues and Unresolved Bugs
 
