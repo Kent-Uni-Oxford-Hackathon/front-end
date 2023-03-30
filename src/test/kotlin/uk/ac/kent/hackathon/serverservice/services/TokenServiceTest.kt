@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder.fromHttpUrl
 import uk.ac.kent.hackathon.serverservice.config.EtherscanConfig
+import uk.ac.kent.hackathon.serverservice.domain.Contract
 import uk.ac.kent.hackathon.serverservice.domain.NFTResponse
 import uk.ac.kent.hackathon.serverservice.domain.Token
 import uk.ac.kent.hackathon.serverservice.domain.TokenNFTTxResponse
@@ -30,6 +31,9 @@ class TokenServiceTest {
         private const val PASSWORD = "aTokenString"
         private const val CATEGORY_ADDRESS = "aCategoryAddress"
         private const val HEX_CHARS = "123456789abcdef"
+        private const val CATEGORY_NAME = "aCategoryName"
+        private const val GROUP = "aGroupName"
+        private const val IMAGE_PATH = "aImagePath"
     }
 
     @MockBean
@@ -42,6 +46,7 @@ class TokenServiceTest {
     private lateinit var tokenService: TokenService
 
     private lateinit var etherAccount: EtherAccount
+    private lateinit var contract: Contract
     private lateinit var userDetailsImpl: UserDetailsImpl
     private lateinit var getTransactionsEndpoint: URI
 
@@ -61,6 +66,7 @@ class TokenServiceTest {
             .queryParam("sort", "asc")
             .queryParam("apikey", etherscanConfig.etherscanApiKey)
             .build().toUri()
+        contract = Contract(CATEGORY_NAME, GROUP, CATEGORY_ADDRESS, IMAGE_PATH)
     }
 
 
@@ -137,9 +143,9 @@ class TokenServiceTest {
         given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
             .willReturn(expectedResponse)
 
-        val tokensByUserAndCategory = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
+        val tokensByUserAndCategory = tokenService.getTokensByUserAndCategory(userDetailsImpl, contract)
 
-        assertThat(tokensByUserAndCategory, contains(Token(2, userDetailsImpl)))
+        assertThat(tokensByUserAndCategory, contains(Token(2, userDetailsImpl, contract)))
 
         then(restTemplate).should(times(1))
             .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
@@ -198,7 +204,7 @@ class TokenServiceTest {
         given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
             .willReturn(expectedResponse)
 
-        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
+        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, contract)
 
         assertThat(tokensByUser, emptyCollectionOf(Token::class.java))
 
@@ -238,9 +244,9 @@ class TokenServiceTest {
         given(restTemplate.getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java))
             .willReturn(expectedResponse)
 
-        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, CATEGORY_ADDRESS)
+        val tokensByUser = tokenService.getTokensByUserAndCategory(userDetailsImpl, contract)
 
-        assertThat(tokensByUser, contains(Token(1, userDetailsImpl)))
+        assertThat(tokensByUser, contains(Token(1, userDetailsImpl, contract)))
 
         then(restTemplate).should(times(1))
             .getForObject(getTransactionsEndpoint, TokenNFTTxResponse::class.java)
